@@ -1,8 +1,8 @@
 # You are viewing a ★chatbot/urls.py
 
 from django.urls import path
-from .views import generate_text
+from .views import ChatbotView
 
 urlpatterns = [
-    path('generate/', generate_text, name='generate_text'),
+	path('', ChatbotView.as_view(), name='chat'),
 ]

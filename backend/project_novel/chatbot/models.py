@@ -1,4 +1,4 @@
-# chatbot/models.py
+# ★chatbot/models.py
 from django.db import models
 
 class Conversation(models.Model):
