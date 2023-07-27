@@ -55,3 +55,4 @@ DATABASES = {
 - https://code.visualstudio.com/docs/python/environments#_select-and-activate-an-environment
 - 생성 한 가상환경 폴더 내부의 다음 경로로 interpreter 재설정.
 `(윈도우 기준 기타 상위폴더 경로들)\backend\venv\Scripts\python.exe`
+

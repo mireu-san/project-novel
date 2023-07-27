@@ -6,9 +6,13 @@ from dotenv import load_dotenv
 import openai
 import os
 from .models import Conversation
+from rest_framework import viewsets
+from .serializers import ConversationSerializer
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+
 
 
 class ChatbotView(View):
@@ -45,3 +49,8 @@ class ChatbotView(View):
             request.session.modified = True
 
         return self.get(request, *args, **kwargs)
+
+
+class ConversationViewSet(viewsets.ModelViewSet):
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer

@@ -21,4 +21,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('chatbot/', include('chatbot.urls'))
+    # If I add another app(folder) as users, and add signup, signin etc...
+    # path('api/users/', include('users.urls')),
 ]
