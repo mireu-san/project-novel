@@ -9,5 +9,4 @@ router.register(r'conversation', ConversationViewSet)
 
 urlpatterns = [
 	path('', ChatbotView.as_view(), name='chat'),
-    path('api/', include(router.urls)),
 ]
