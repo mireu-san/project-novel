@@ -1,4 +1,4 @@
-# You are viewing a ★chatbot/urls.py
+# ★chatbot/urls.py
 
 from django.urls import path, include
 from .views import ChatbotView, ConversationViewSet
@@ -8,5 +8,5 @@ router = DefaultRouter()
 router.register(r'conversation', ConversationViewSet)
 
 urlpatterns = [
-	path('', ChatbotView.as_view(), name='chat'),
+    path('api/chat/', ChatbotView.as_view(), name='chat'),
 ]

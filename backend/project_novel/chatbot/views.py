@@ -1,10 +1,12 @@
 # ★chatbot/views.py
-
-from django.shortcuts import render
+from django.http import JsonResponse
 from django.views import View
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 import openai
 import os
+import json
 from .models import Conversation
 from rest_framework import viewsets
 from .serializers import ConversationSerializer
@@ -12,16 +14,11 @@ from .serializers import ConversationSerializer
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-
-
-
+@method_decorator(csrf_exempt, name='dispatch')
 class ChatbotView(View):
-    def get(self, request, *args, **kwargs):
-        conversations = request.session.get('conversations', [])
-        return render(request, 'chat.html', {'conversations': conversations})
-
     def post(self, request, *args, **kwargs):
-        prompt = request.POST.get('prompt')
+        body = json.loads(request.body)
+        prompt = body.get('prompt')
         if prompt:
             # 이전 대화 기록 가져오기
             session_conversations = request.session.get('conversations', [])
@@ -48,9 +45,8 @@ class ChatbotView(View):
             # 세변 내용 변경 시, 내용을 추가로 SQLite 에 저장
             request.session.modified = True
 
-        return self.get(request, *args, **kwargs)
+        return JsonResponse({'prompt': prompt, 'response': response})
 
-
-class ConversationViewSet(viewsets.ModelViewSet):
-    queryset = Conversation.objects.all()
-    serializer_class = ConversationSerializer
+    def get(self, request, *args, **kwargs):
+        conversations = request.session.get('conversations', [])
+        return JsonResponse({'conversations': conversations})
