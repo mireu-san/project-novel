@@ -1,8 +1,13 @@
-# You are viewing a ★chatbot/urls.py
+# ★chatbot/urls.py
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ChatbotView, ConversationViewSet
 
-from django.urls import path
-from .views import ChatbotView
+routers = DefaultRouter()
+routers.register(r'conversation', ConversationViewSet)
 
 urlpatterns = [
-	path('', ChatbotView.as_view(), name='chat'),
+    path('api/chat/', ChatbotView.as_view(), name='chatbot'),
+    # ConversationViewSet 에서 정의한 url 을 사용하기 위해 routers.urls 를 사용
+    path('api/', include(routers.urls))
 ]

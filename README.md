@@ -49,9 +49,10 @@ DATABASES = {
         'PORT': '5432',
     }
 } -->
-
+<!-- https://www.commandprompt.com/education/how-to-rename-a-userrole-in-postgresql/ -->
 ### python, virtual environment
 - dotenv 가 작동하지 않는 문제. 이는 interpreter 의 문제.
 - https://code.visualstudio.com/docs/python/environments#_select-and-activate-an-environment
 - 생성 한 가상환경 폴더 내부의 다음 경로로 interpreter 재설정.
 `(윈도우 기준 기타 상위폴더 경로들)\backend\venv\Scripts\python.exe`
+
