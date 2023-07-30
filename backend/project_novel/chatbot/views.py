@@ -10,6 +10,7 @@ import json
 from .models import Conversation
 from rest_framework import viewsets
 from .serializers import ConversationSerializer
+# from django.views.generic import TemplateView
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -50,3 +51,8 @@ class ChatbotView(View):
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
         return JsonResponse({'conversations': conversations})
+
+
+class ConversationViewSet(viewsets.ModelViewSet):
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer
