@@ -56,3 +56,9 @@ DATABASES = {
 - 생성 한 가상환경 폴더 내부의 다음 경로로 interpreter 재설정.
 `(윈도우 기준 기타 상위폴더 경로들)\backend\venv\Scripts\python.exe`
 
+### users/views.py - create
+https://stackoverflow.com/questions/50797170/password-encryption-in-django-using-serializerdrf
+
+
+### DRF page (root, chatbot - urls.py)
+http://localhost:8000/chatbot/api/conversation/
