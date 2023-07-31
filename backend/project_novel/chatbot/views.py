@@ -19,7 +19,18 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 class ChatbotView(View):
     def post(self, request, *args, **kwargs):
         body = json.loads(request.body)
-        prompt = body.get('prompt')
+        # print(type(body)) # type 확인. client 측에서 오는 데이터 type 이 list 인지 dict 인지.
+        # prompt = body.get('prompt')
+        messages = body['messages']
+
+        # 들어오는 value가 없을 시, 예외 처리
+        prompt = None
+        response = None
+
+        for message in messages:
+            if message['role'] == 'user':
+                prompt = message['content']
+
         if prompt:
             # 이전 대화 기록 가져오기
             session_conversations = request.session.get('conversations', [])
