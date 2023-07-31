@@ -28,7 +28,7 @@ export const printAnswer = async ($chatList, answer, $form) => {
   console.log("printAnswer called with answer:", answer);
 
   // 답변 표시 전에 $chatList의 현재 상태를 로깅
-  console.log("Before $chatList update:", $chatList.innerHTML);
+  console.log("답변 수신 전까지 출력 할, 입력했던 내용:", $chatList.innerHTML);
 
   $chatList.innerHTML = "";
   
@@ -40,7 +40,7 @@ export const printAnswer = async ($chatList, answer, $form) => {
   $chatList.appendChild(li);
 
   // 답변 표시 후에 $chatList의 상태를 로깅
-  console.log("After $chatList update:", $chatList.innerHTML);
+  console.log("django server 로 부터, openAI의 response 를 client 에서 수신 받은 내용:", $chatList.innerHTML);
 
   // 클립보드로 복사 버튼
   let copyButton = document.createElement("button");
