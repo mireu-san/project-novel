@@ -25,19 +25,24 @@ export const printQuestion = async ($chatList, questionData, question) => {
 
 // 화면에 답변 그려주는 함수
 export const printAnswer = async ($chatList, answer, $form) => {
+  console.log("printAnswer called with answer:", answer);
+
+  // 답변 표시 전에 $chatList의 현재 상태를 로깅
+  console.log("Before $chatList update:", $chatList.innerHTML);
+
   $chatList.innerHTML = "";
+  
   // 답변 표시
   let li = document.createElement("li");
-  // transition effect to highlight the answer.
   li.classList.add("answer", "fade");
   li.innerText = answer;
+  console.log("li:", li);
   $chatList.appendChild(li);
 
-  setTimeout(() => {
-    li.classList.add("fadeIn");
-  }, 500);
+  // 답변 표시 후에 $chatList의 상태를 로깅
+  console.log("After $chatList update:", $chatList.innerHTML);
 
-  // 클립보트로 복사 버튼
+  // 클립보드로 복사 버튼
   let copyButton = document.createElement("button");
   copyButton.classList.add("copyButton");
   copyButton.innerText = "이 답변 내용을 복사합니다.";
@@ -58,6 +63,7 @@ export const printAnswer = async ($chatList, answer, $form) => {
         console.log("뭔가 잘못되었습니다. printAnswer -> copyButton", err);
       });
   });
+  console.log("copyButton", copyButton);
   $chatList.appendChild(copyButton);
 
   // URL 링크 추가
@@ -66,6 +72,7 @@ export const printAnswer = async ($chatList, answer, $form) => {
   link.textContent = "알라딘 온라인 서점";
   link.target = "_blank";
   link.id = "copyButton2";
+  console.log("link:", link);
   $chatList.appendChild(link);
 
   // 새로고침 버튼
@@ -77,8 +84,10 @@ export const printAnswer = async ($chatList, answer, $form) => {
     $form.reset();
     location.reload();
   });
+  console.log("resetButton:", resetButton);
   $chatList.appendChild(resetButton);
 };
+
 
 export const showLoadingSvg = () => {
   document.getElementById("loadingSvg").style.display = "block";

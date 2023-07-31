@@ -57,6 +57,7 @@ class ChatbotView(View):
             # 세변 내용 변경 시, 내용을 추가로 SQLite 에 저장
             request.session.modified = True
 
+        print({'prompt': prompt, 'response': response})
         return JsonResponse({'prompt': prompt, 'response': response})
 
     def get(self, request, *args, **kwargs):
