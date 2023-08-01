@@ -62,3 +62,63 @@ https://stackoverflow.com/questions/50797170/password-encryption-in-django-using
 
 ### DRF page (root, chatbot - urls.py)
 http://localhost:8000/chatbot/api/conversation/
+```
+projectLightNovel-main
+├─ .git
+├─ .gitignore
+├─ backend
+│  └─ project_novel
+│     ├─ .gitignore
+│     ├─ chatbot
+│     │  ├─ admin.py
+│     │  ├─ apps.py
+│     │  ├─ migrations
+│     │  │  ├─ 0001_initial.py
+│     │  │  └─ __init__.py
+│     │  ├─ models.py
+│     │  ├─ serializers.py
+│     │  ├─ templates
+│     │  │  ├─ base.html
+│     │  │  └─ chat.html
+│     │  ├─ tests.py
+│     │  ├─ urls.py
+│     │  ├─ views.py
+│     │  └─ __init__.py
+│     ├─ dockerfile
+│     ├─ manage.py
+│     ├─ project_novel
+│     │  ├─ asgi.py
+│     │  ├─ settings.py
+│     │  ├─ urls.py
+│     │  ├─ wsgi.py
+│     │  └─ __init__.py
+│     └─ users
+│        ├─ admin.py
+│        ├─ apps.py
+│        ├─ migrations
+│        │  ├─ 0001_initial.py
+│        │  └─ __init__.py
+│        ├─ models.py
+│        ├─ serializers.py
+│        ├─ tests.py
+│        ├─ urls.py
+│        ├─ views.py
+│        └─ __init__.py
+├─ client
+│  ├─ .gitignore
+│  ├─ index.html
+│  ├─ README.md
+│  └─ src
+│     ├─ main.js
+│     ├─ modules
+│     │  ├─ api.js
+│     │  ├─ dom.js
+│     │  ├─ questionnaire.js
+│     │  └─ ui.js
+│     └─ styles
+│        ├─ library.jpg
+│        ├─ loading.svg
+│        └─ style.css
+└─ README.md
+
+```

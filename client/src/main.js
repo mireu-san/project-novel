@@ -97,21 +97,22 @@ $form.addEventListener("submit", async (e) => {
   try {
     console.log("API call start");
     const apiResult = await apiPost({messages: data});
+    console.log("API call finished");
     console.log("장고 서버에서, prompt, response 를 처음 수신하는 곳", apiResult);
     hideLoadingSvg();
     console.log("Before printAnswer call");
     printAnswer($chatList, apiResult.response, $form);
     console.log("After printAnswer call");
-
+  
     // 챗봇의 답변을 data 배열에 추가
     data.push({
       role: "assistant",
       content: apiResult.response,
     });
-
   } catch (err) {
     console.log("apiPost 에서 문제 발생. 확인해주세요.", err);
   }
+  
   
   // submit 이 후, questionData 를 초기화.
   questionData.length = 0;

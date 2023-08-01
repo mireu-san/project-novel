@@ -5,17 +5,25 @@ const url = `http://localhost:8000/chatbot/api/chat/`;
 // const url = `https://estsoft-openai-api.jejucodingcamp.workers.dev/`;
 
 export const apiPost = async (data) => {
-  const result = await axios({
-    method: "post",
-    maxBodyLength: Infinity,
-    url: url,
+  const startTime = Date.now();
+
+  const response = await fetch(url, {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json'
     },
-    data: JSON.stringify(data),
+    body: JSON.stringify(data)
   });
-  return result.data;
+
+  const result = await response.json();
+
+  const endTime = Date.now();
+  console.log(`API 요청 처리 시간: ${endTime - startTime} ms`);
+
+  return result;
 };
+
+
 
 // export const apiPost = async (data) => {
 //   const response = await fetch("http://localhost:8000/chatbot/api/chat/", { // URL 수정
