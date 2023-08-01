@@ -4,27 +4,27 @@ const axios = window.axios;
 const url = `http://localhost:8000/chatbot/api/chat/`;
 // const url = `https://estsoft-openai-api.jejucodingcamp.workers.dev/`;
 
-// export const apiPost = async (data) => {
-//   const result = await axios({
-//     method: "post",
-//     maxBodyLength: Infinity,
-//     url: url,
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     data: JSON.stringify(data),
-//   });
-//   return result.data;
-// };
-
 export const apiPost = async (data) => {
-  const response = await fetch("http://localhost:8000/chatbot/api/chat/", { // URL 수정
-    method: "POST",
+  const result = await axios({
+    method: "post",
+    maxBodyLength: Infinity,
+    url: url,
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    data: JSON.stringify(data),
   });
-  console.log(response); // 응답 출력
-  return response.json();
+  return result.data;
 };
+
+// export const apiPost = async (data) => {
+//   const response = await fetch("http://localhost:8000/chatbot/api/chat/", { // URL 수정
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(data),
+//   });
+//   console.log(response); // 응답 출력
+//   return response.json();
+// };
