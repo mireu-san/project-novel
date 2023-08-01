@@ -7,6 +7,12 @@ import {
   hideLoadingSvg,
 } from "./modules/ui.js";
 
+window.onbeforeunload = function(e) {
+  console.trace();
+  return null;
+};
+
+
 console.log("Imports successful.");
 
 let question;

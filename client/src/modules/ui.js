@@ -24,7 +24,7 @@ export const printQuestion = async ($chatList, questionData, question) => {
 };
 
 // 화면에 답변 그려주는 함수
-export const printAnswer = async ($chatList, answer, $form) => {
+export const printAnswer = async ($chatList, answer) => {
   console.log("printAnswer called with answer:", answer);
 
   // 답변 표시 전에 $chatList의 현재 상태를 로깅
@@ -81,7 +81,7 @@ export const printAnswer = async ($chatList, answer, $form) => {
   resetButton.classList.add("resetButton");
   resetButton.innerText = "Reset";
   resetButton.addEventListener("click", () => {
-    $form.reset();
+    $chatList.innerHTML = "";
     location.reload();
   });
   console.log("resetButton:", resetButton);
