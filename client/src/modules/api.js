@@ -7,22 +7,21 @@ const url = `http://localhost:8000/chatbot/api/chat/`;
 export const apiPost = async (data) => {
   const startTime = Date.now();
 
-  const response = await fetch(url, {
-    method: 'POST',
+  const result = await axios({
+    method: "post",
+    maxBodyLength: Infinity,
+    url: url,
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(data)
+    data: JSON.stringify(data),
   });
-
-  const result = await response.json();
 
   const endTime = Date.now();
   console.log(`API 요청 처리 시간: ${endTime - startTime} ms`);
 
-  return result;
+  return result.data;
 };
-
 
 
 // export const apiPost = async (data) => {
