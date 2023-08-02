@@ -35,6 +35,7 @@ http://localhost:8000/chatbot/api/conversation/
 
 ### Crash note:
 ![이미지 설명](/image/a1.jpg)
+![이미지 설명](/image/a2.jpg)
 1. aws lightsail
   - httpd (apache)
   - nginx 와의 포트넘버 충돌 및 우회
