@@ -1,40 +1,10 @@
 ## Welcome!
 - 현재 이 프로젝트는 진행중입니다. 문의사항은 메일 또는 DM 부탁드립니다.
-- This project supports Korean language at the moment. Please send an email or DM me if you have any question regarding this project.
+- This project supports Korean language only at the moment. Please send an email or DM me if you have any question regarding this project.
 
-## 예상 Docker 컨테이너 내부 구조
-- (local: Backend/project_novel -> Docker: Backend/app)
-/
-├── app
-│   ├── chatbot
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── migrations
-│   │   │   └─ __init__.py
-│   │   ├── models.py
-│   │   ├── templates
-│   │   │   ├── base.html
-│   │   │   └─ chat.html
-│   │   ├── tests.py
-│   │   ├── urls.py
-│   │   ├── views.py
-│   │   └─ __init__.py
-│   ├── project_novel
-│   │   ├── asgi.py
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   ├── wsgi.py
-│   │   └─ __init__.py
-│   └─ manage.py
-└─ tmp
-
-## Crash note
-(임시성격이 강한 경우, 구분을 위해 영어로 작성)
-
+## 메모.
 ### postgresql settings.py
 pgadmin 7.3 이 안전한 버전. 7.4 에서 다운그레이드함.
-
-
 ### postgresql 
 psql -U <usernamehere!>
 <!-- 
@@ -62,63 +32,61 @@ https://stackoverflow.com/questions/50797170/password-encryption-in-django-using
 
 ### DRF page (root, chatbot - urls.py)
 http://localhost:8000/chatbot/api/conversation/
-```
-projectLightNovel-main
-├─ .git
-├─ .gitignore
-├─ backend
-│  └─ project_novel
-│     ├─ .gitignore
-│     ├─ chatbot
-│     │  ├─ admin.py
-│     │  ├─ apps.py
-│     │  ├─ migrations
-│     │  │  ├─ 0001_initial.py
-│     │  │  └─ __init__.py
-│     │  ├─ models.py
-│     │  ├─ serializers.py
-│     │  ├─ templates
-│     │  │  ├─ base.html
-│     │  │  └─ chat.html
-│     │  ├─ tests.py
-│     │  ├─ urls.py
-│     │  ├─ views.py
-│     │  └─ __init__.py
-│     ├─ dockerfile
-│     ├─ manage.py
-│     ├─ project_novel
-│     │  ├─ asgi.py
-│     │  ├─ settings.py
-│     │  ├─ urls.py
-│     │  ├─ wsgi.py
-│     │  └─ __init__.py
-│     └─ users
-│        ├─ admin.py
-│        ├─ apps.py
-│        ├─ migrations
-│        │  ├─ 0001_initial.py
-│        │  └─ __init__.py
-│        ├─ models.py
-│        ├─ serializers.py
-│        ├─ tests.py
-│        ├─ urls.py
-│        ├─ views.py
-│        └─ __init__.py
-├─ client
-│  ├─ .gitignore
-│  ├─ index.html
-│  ├─ README.md
-│  └─ src
-│     ├─ main.js
-│     ├─ modules
-│     │  ├─ api.js
-│     │  ├─ dom.js
-│     │  ├─ questionnaire.js
-│     │  └─ ui.js
-│     └─ styles
-│        ├─ library.jpg
-│        ├─ loading.svg
-│        └─ style.css
-└─ README.md
 
+### Crash note:
+![이미지 설명](/image/a1.jpg)
+1. aws lightsail
+  - httpd (apache)
+  - nginx 와의 포트넘버 충돌 및 우회
+  - 쓰기/읽기 권한 부여 (uwsgi)
+
+- 잘못된 접근
+  - server 실행 후, 클라이언트 쪽 index.html 을 계속 실행하려 함.
+
+### 피드백
+- 개발용은 일단 로컬 상에서 협업 하더라도, 서로 먼저 테스트를 해 보고 나서 견본 수준으로 완성이 되고 나면 이를 토대로 cloud 서버에서 별도로 git clone 후 설정 및 테스트 작업을 위한 준비를 하는 것.
+- 현 진행중인 프로젝트 계획의 개요 정도는 개인적으로라도 kanban 같은 곳에 기록 해 두는게 도움이 됨.
+- 유사 구현 사례를 좀 더 다양하게 찾아 볼 필요성.
+
+2. client와 server 간의 I/O
+![이미지 설명](/image/b1.jpg)
+
+```
+main.js:11 console.trace
+window.onbeforeunload @ main.js:11
+Navigated to http://127.0.0.1:5500/client/index.html
+main.js:16 Imports successful.
+main.js:28 Initial data: [{…}]
+main.js:41 Data after push: (3) [{…}, {…}, {…}]
+main.js:46 Initial questionData: []
+main.js:51 Inputs: NodeList(3) [input#input1, input#input2, input#input3]
+main.js:76 Form submitted.
+main.js:83 Inputs after replacement: 이것은 실험용 메세지입니다 알겠죠?
+main.js:88 Combined question: 이것은. 실험용. 메세지입니다 알겠죠?.
+main.js:95 Inputs after reset:   
+main.js:70 Question sent: 이것은. 실험용. 메세지입니다 알겠죠?.
+main.js:104 API call start
+api.js:21 API 요청 처리 시간: 3431 ms
+main.js:106 API call finished
+main.js:107 장고 서버에서, prompt, response 를 처음 수신하는 곳 {prompt: '이것은. 실험용. 메세지입니다 알겠죠?.', response: '알겠습니다. 실험용 메세지를 이해했습니다.'}
+main.js:109 Before printAnswer call
+ui.js:28 printAnswer called with answer: 알겠습니다. 실험용 메세지를 이해했습니다.
+ui.js:31 답변 수신 전까지 출력 할, 입력했던 내용: <li class="question"><span>다음의 문장을 기반으로 알아보고 있어요: </span><span>이것은. 실험용. 메세지입니다 알겠죠?.</span></li>
+ui.js:39 li: <li class=​"answer fade">​…​</li>​
+ui.js:43 django server 로 부터, openAI의 response 를 client 에서 수신 받은 내용: <li class="answer fade">알겠습니다. 실험용 메세지를 이해했습니다.</li>
+ui.js:66 copyButton <button class=​"copyButton" type=​"button">​이 답변 내용을 복사합니다.​</button>​
+ui.js:75 link: a#copyButton2
+ui.js:87 resetButton: button.resetButton
+main.js:111 After printAnswer call
+main.js:125 questionData after reset: []
+main.js:127 $chatList: ul
+ console.trace
+window.onbeforeunload @ main.js:11
+socket.onmessage @ index.html:89
+Navigated to http://127.0.0.1:5500/client/index.html
+main.js:16 Imports successful.
+main.js:28 Initial data: [{…}]
+main.js:41 Data after push: (3) [{…}, {…}, {…}]
+main.js:46 Initial questionData: []
+main.js:51 Inputs: NodeList(3) [input#input1, input#input2, input#input3]
 ```
