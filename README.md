@@ -5,7 +5,7 @@ Please send an email or DM me if you have any question regarding this project.
 ## 한계점.
 - DB 의 경우 postgresql를 아직 도입하지 않았습니다.
 - django 만으로 작동 중 입니다. (nginx 와 같은 reverse proxy https 미적용)
-- docker 로 컨테이너 화 하지 않았습니다.
+- docker 로 컨테이너화 하지 않았습니다 (이 후, aws ec2에 호스팅).
 - UI 보다는 데이터 I/O 가능 여부에 중점을 두고 개발했습니다.
 
 <!-- ## 메모. -->
