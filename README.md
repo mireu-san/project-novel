@@ -51,7 +51,8 @@ http://localhost:8000/chatbot/api/conversation/
 
 2. client와 server 간의 I/O
 ![이미지 설명](/image/b1.jpg)
-
+![이미지 설명](/image/b2.jpg)
+![이미지 설명](/image/b3.jpg)
 ```
 main.js:11 console.trace
 window.onbeforeunload @ main.js:11
