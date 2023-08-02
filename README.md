@@ -1,12 +1,18 @@
 ## Welcome!
 - 현재 이 프로젝트는 진행중입니다. 문의사항은 메일 또는 DM 부탁드립니다.
-- This project supports Korean language only at the moment. Please send an email or DM me if you have any question regarding this project.
+Please send an email or DM me if you have any question regarding this project.
 
-## 메모.
-### postgresql settings.py
-pgadmin 7.3 이 안전한 버전. 7.4 에서 다운그레이드함.
-### postgresql 
-psql -U <usernamehere!>
+## 한계점.
+- DB 의 경우 postgresql를 아직 도입하지 않았습니다.
+- django 만으로 작동 중 입니다. (nginx 와 같은 reverse proxy https 미적용)
+- docker 로 컨테이너 화 하지 않았습니다.
+- UI 보다는 데이터 I/O 가능 여부에 중점을 두고 개발했습니다.
+
+<!-- ## 메모. -->
+<!-- ### postgresql settings.py
+pgadmin 7.3 이 안전한 버전. 7.4 에서 다운그레이드함. -->
+<!-- ### postgresql  -->
+<!-- psql -U <usernamehere!> -->
 <!-- 
 DATABASES = {
     'default': {
@@ -26,8 +32,20 @@ DATABASES = {
 - 생성 한 가상환경 폴더 내부의 다음 경로로 interpreter 재설정.
 `(윈도우 기준 기타 상위폴더 경로들)\backend\venv\Scripts\python.exe`
 
-### users/views.py - create
+### users/serializers.py - create
 https://stackoverflow.com/questions/50797170/password-encryption-in-django-using-serializerdrf
+
+- 비밀번호 암호화 부분입니다. 
+- make_password 를 이용해서, 비밀번호를 해쉬 처리 함으로서 암호화가 됩니다.
+```
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = super(UserSerializer, self).create(validated_data)
+        user.password = make_password(password)
+        user.save()
+        return user
+```
+
 
 
 ### DRF page (root, chatbot - urls.py)
@@ -95,4 +113,26 @@ main.js:28 Initial data: [{…}]
 main.js:41 Data after push: (3) [{…}, {…}, {…}]
 main.js:46 Initial questionData: []
 main.js:51 Inputs: NodeList(3) [input#input1, input#input2, input#input3]
+```
+
+### 그 외 기능.
+- DB에 대화 내역이 저장되고 있습니다.
+![이미지 설명](/image/c1.jpg)
+- prompt 와 response 값 설정을 통한 테스트.
+![이미지 설명](/image/c2.jpg)
+
+### 로그인 기능.
+![이미지 설명](/image/login1.jpg)
+```
+login.js:20 
+{refresh: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90e…iOjJ9.2sr8Z8Ocw79zrKb7QpqgVn7kigtP0tH0luQJk64IqSE', access: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90e…I6Mn0.svDR-FE_wbun81IWMi3D4kfPkbBludIZz80IiKQpOrs'}
+access
+: 
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkwOTkyMjU1LCJpYXQiOjE2OTA5OTE5NTUsImp0aSI6IjE2ZGQxMDMwNmYwYjQ1NGU5Y2VmNGIwNDAxOWVkMzA3IiwidXNlcl9pZCI6Mn0.svDR-FE_wbun81IWMi3D4kfPkbBludIZz80IiKQpOrs"
+refresh
+: 
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY5MTA3ODM1NSwiaWF0IjoxNjkwOTkxOTU1LCJqdGkiOiIyMWE5NTcxMGIwNWM0NzRjYTdjZDMwZmExMzNmMGM0OSIsInVzZXJfaWQiOjJ9.2sr8Z8Ocw79zrKb7QpqgVn7kigtP0tH0luQJk64IqSE"
+[[Prototype]]
+: 
+Object
 ```
