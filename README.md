@@ -36,6 +36,8 @@ http://localhost:8000/chatbot/api/conversation/
 ### Crash note:
 ![이미지 설명](/image/a1.jpg)
 ![이미지 설명](/image/a2.jpg)
+
+
 (※참고: 더는 작동하지 않는 instance 및 DB.)
 
 1. aws lightsail
