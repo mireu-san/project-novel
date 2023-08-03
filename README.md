@@ -1,12 +1,12 @@
 ## Welcome!
-- 현재 이 프로젝트는 진행중입니다. 문의사항은 메일 또는 DM 부탁드립니다.
-Please send an email or DM me if you have any question regarding this project.
+바닐라 자바스크립트(client/client) 가 openAI에 바로 송수신을 해서 개인 맞춤형 서비스 제공 및 데이터 수집/분석 구현에 어려움이 있었음. 장고(server/server) 서버를 거쳐서 OpenAI 간의 I/O를 진행. 이 과정에서 User 기능 및 DB에 대화내용을 기록하는 것.
 
 ## 한계점.
-- DB 의 경우 postgresql를 아직 도입하지 않았습니다.
-- django 만으로 작동 중 입니다. (nginx 와 같은 reverse proxy https 미적용)
+- DB 의 경우 아직 postgresql를 도입하지 않았습니다.
+- django 만으로 작동 중 입니다. (nginx 와 같은 reverse proxy, 정적 파일 처리 미적용)
 - docker 로 컨테이너화 하지 않았습니다 (이 후, aws ec2에 호스팅).
 - UI 보다는 데이터 I/O 가능 여부에 중점을 두고 개발했습니다.
+- 법률 관련은 임시로 배제하고 개발했습니다.
 
 <!-- ## 메모. -->
 <!-- ### postgresql settings.py
@@ -26,13 +26,19 @@ DATABASES = {
     }
 } -->
 <!-- https://www.commandprompt.com/education/how-to-rename-a-userrole-in-postgresql/ -->
-### python, virtual environment
+### 메모
+python, virtual environment
 - dotenv 가 작동하지 않는 문제. 이는 interpreter 의 문제.
 - https://code.visualstudio.com/docs/python/environments#_select-and-activate-an-environment
 - 생성 한 가상환경 폴더 내부의 다음 경로로 interpreter 재설정.
 `(윈도우 기준 기타 상위폴더 경로들)\backend\venv\Scripts\python.exe`
 
-### users/serializers.py - create
+### nginx, uwsgi (구상)
+- Nginx 가 client 에서 모든 http request 를 수신
+- 정적이면 Nginx 로, 그러나 장고 앱에 대한 요청이면 uwsgi 서버로 요청.
+- uwsgi가 장고 앱을 실행.
+
+### users/serializers.py - create (암호화)
 https://stackoverflow.com/questions/50797170/password-encryption-in-django-using-serializerdrf
 
 - 비밀번호 암호화 부분입니다. 
