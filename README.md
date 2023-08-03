@@ -1,7 +1,9 @@
-## Welcome!
+# Welcome!
+
+## 프로젝트 주제
 바닐라 자바스크립트(client/client) 가 openAI에 바로 송수신을 해서 개인 맞춤형 서비스 제공 및 데이터 수집/분석 구현에 어려움이 있었음. 장고(server/server) 서버를 거쳐서 OpenAI 간의 I/O를 진행. 이 과정에서 User 기능 및 DB에 대화내용을 기록하는 것.
 
-## 한계점.
+## 한계
 - DB 의 경우 아직 postgresql를 도입하지 않았습니다.
 - django 만으로 작동 중 입니다. (nginx 와 같은 reverse proxy, 정적 파일 처리 미적용)
 - docker 로 컨테이너화 하지 않았습니다 (이 후, aws ec2에 호스팅).
@@ -37,6 +39,8 @@ python, virtual environment
 - Nginx 가 client 에서 모든 http request 를 수신
 - 정적이면 Nginx 로, 그러나 장고 앱에 대한 요청이면 uwsgi 서버로 요청.
 - uwsgi가 장고 앱을 실행.
+`요약: Nginx가 client로부터 모든 http request를 수신하고, 정적 파일이면 Nginx가 처리하고, 그 외의 경우 uwsgi 서버로 요청을 전달하는 구성을 계획중.`
+
 
 ### users/serializers.py - create (암호화)
 https://stackoverflow.com/questions/50797170/password-encryption-in-django-using-serializerdrf
@@ -54,7 +58,7 @@ https://stackoverflow.com/questions/50797170/password-encryption-in-django-using
 
 
 
-### DRF page (root, chatbot - urls.py)
+### Django Rest Framework page
 http://localhost:8000/chatbot/api/conversation/
 
 ### Crash note:
