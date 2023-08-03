@@ -10,7 +10,6 @@ import json
 from .models import Conversation
 from rest_framework import viewsets
 from .serializers import ConversationSerializer
-# from django.views.generic import TemplateView
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
