@@ -134,6 +134,16 @@ main.js:51 Inputs: NodeList(3) [input#input1, input#input2, input#input3]
 ![이미지 설명](/image/c2.jpg)
 
 ### 로그인 기능.
+```
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+```
 ![이미지 설명](/image/login1.jpg)
 ```
 login.js:20 
