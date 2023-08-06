@@ -14,7 +14,9 @@ from .serializers import ConversationSerializer
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+
 @method_decorator(csrf_exempt, name='dispatch')
+# 유저가 장고 서버를 통해 interatcion 하도록.
 class ChatbotView(View):
     def post(self, request, *args, **kwargs):
         body = json.loads(request.body)
@@ -64,6 +66,41 @@ class ChatbotView(View):
         return JsonResponse({'conversations': conversations})
 
 
-class ConversationViewSet(viewsets.ModelViewSet):
-    queryset = Conversation.objects.all()
-    serializer_class = ConversationSerializer
+# DB 내 대화 데이터와 interacting 하도록 (하는 API). 즉, admin, user 모두 DB에 저장된 chat history 관리가능케 하는 API.
+# 각 endpoint 에 대한 CRUD 작업을 수행하는 API. (기존 viewsets.ModelViewSet 을 View 로 통일화 및 대체)
+class ConversationView(View):
+    def get(self, request, pk=None, *args, **kwargs):
+        # 특정 대화(pk)를 조회하거나 전체 대화 목록을 반환합니다.
+        if pk:
+            conversation = Conversation.objects.get(pk=pk) # 특정 대화 조회
+            serializer = ConversationSerializer(conversation)
+            return JsonResponse(serializer.data)
+        else:
+            conversations = Conversation.objects.all() # 전체 대화 목록 조회
+            serializer = ConversationSerializer(conversations, many=True)
+            return JsonResponse(serializer.data, safe=False)
+
+    def post(self, request, *args, **kwargs):
+        # 새로운 대화를 생성합니다.
+        data = json.loads(request.body)
+        serializer = ConversationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save() # 데이터가 유효하면 저장
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400) # 유효하지 않으면 오류 반환
+
+    def put(self, request, pk, *args, **kwargs):
+        # 특정 대화(pk)를 수정합니다.
+        conversation = Conversation.objects.get(pk=pk)
+        data = json.loads(request.body)
+        serializer = ConversationSerializer(conversation, data=data)
+        if serializer.is_valid():
+            serializer.save() # 데이터가 유효하면 저장
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400) # 유효하지 않으면 오류 반환
+
+    def delete(self, request, pk, *args, **kwargs):
+        # 특정 대화(pk)를 삭제합니다.
+        conversation = Conversation.objects.get(pk=pk)
+        conversation.delete() # 대화 삭제
+        return JsonResponse({'message': 'Deleted successfully'}, status=204) # 성공 메시지 반환
