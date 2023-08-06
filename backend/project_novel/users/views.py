@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .serializers import UserSerializer
 from rest_framework.permissions import AllowAny
 
-
+# 메모: view 로 할까 싶었지만, 특별히 커스텀화가 요구되는게 아닌 이상 viewsets 으로 설정.
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
