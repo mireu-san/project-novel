@@ -19,10 +19,15 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # 유저가 장고 서버를 통해 interatcion 하도록.
 class ChatbotView(View):
     def post(self, request, *args, **kwargs):
-        body = json.loads(request.body)
-        # print(type(body)) # type 확인. client 측에서 오는 데이터 type 이 list 인지 dict 인지.
-        # prompt = body.get('prompt')
-        messages = body['messages']
+        # 요청 본문 로깅
+        print("Received request body:", request.body.decode('utf-8'))
+
+        body = json.loads(request.body.decode('utf-8'))
+        # 'messages' key 가 있는지 없는지 확인.
+        # messages = body['messages']
+        messages = body.get('messages', [])
+        if not messages:
+            return JsonResponse({'error': '에러 코드 400, client side 에서 어떠한 메세지를 받지 못함.'}, status=400)
 
         # 들어오는 value가 없을 시, 예외 처리
         prompt = None
@@ -64,8 +69,6 @@ class ChatbotView(View):
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
         return JsonResponse({'conversations': conversations})
-
-
 # DB 내 대화 데이터와 interacting 하도록 (하는 API). 즉, admin, user 모두 DB에 저장된 chat history 관리가능케 하는 API.
 # 각 endpoint 에 대한 CRUD 작업을 수행하는 API. (기존 viewsets.ModelViewSet 을 View 로 통일화 및 대체)
 class ConversationView(View):

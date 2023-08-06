@@ -14,7 +14,7 @@ class ChatbotViewTest(APITestCase):
         url = reverse('chatbot')
 
         # 테스트에 사용할 요청 데이터를 정의.
-        data = {'messages': [{'role': 'user', 'content': 'Hello, AI!'}]}
+        data = {'messages': [{'role': 'user', 'content': '이 메세지를 받았다면 ''chatbot app, 테스트 케이스 통과입니다.'' 이라고 답변해보세요.'}]}
 
         # 지정된 URL에 POST 요청을 보냅니다.
         # views.py 파일의 ChatbotView 클래스의 post 메서드가 호출됩니다.
