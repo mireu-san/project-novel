@@ -10,6 +10,11 @@ import json
 from .models import Conversation
 from rest_framework import viewsets
 from .serializers import ConversationSerializer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+# from rest_framework.authentication import TokenAuthentication
+# from rest_framework.permissions import BasePermission
+
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -19,7 +24,12 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # 유저가 장고 서버를 통해 interatcion 하도록.
 
 
-class ChatbotView(View):
+class ChatbotView(APIView):
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsOwnerOfChatHistory]
+    authentication_classes = []
+    permission_classes = []
+
     def post(self, request, *args, **kwargs):
         # 요청 본문 로깅
         print("Received request body:", request.body.decode('utf-8'))
@@ -29,7 +39,7 @@ class ChatbotView(View):
         # messages = body['messages']
         messages = body.get('messages', [])
         if not messages:
-            return JsonResponse({'error': '에러 코드 400, client side 에서 어떠한 메세지를 받지 못함.'}, status=400)
+            return Response({'error': '에러 코드 400, client side 에서 어떠한 메세지를 받지 못함.'}, status=400)
 
         # 들어오는 value가 없을 시, 예외 처리
         prompt = None
