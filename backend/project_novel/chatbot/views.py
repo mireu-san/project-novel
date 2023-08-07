@@ -17,6 +17,8 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 @method_decorator(csrf_exempt, name='dispatch')
 # 유저가 장고 서버를 통해 interatcion 하도록.
+
+
 class ChatbotView(View):
     def post(self, request, *args, **kwargs):
         # 요청 본문 로깅
@@ -71,6 +73,8 @@ class ChatbotView(View):
         return JsonResponse({'conversations': conversations})
 # DB 내 대화 데이터와 interacting 하도록 (하는 API). 즉, admin, user 모두 DB에 저장된 chat history 관리가능케 하는 API.
 # 각 endpoint 에 대한 CRUD 작업을 수행하는 API. (기존 viewsets.ModelViewSet 을 View 로 통일화 및 대체)
+
+
 class ConversationView(View):
     def get(self, request, pk=None, *args, **kwargs):
         # 특정 대화(pk)를 조회하거나 전체 대화 목록을 반환합니다.
