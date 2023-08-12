@@ -106,16 +106,6 @@ class ConversationView(View):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400) # 유효하지 않으면 오류 반환
 
-    def put(self, request, pk, *args, **kwargs):
-        # 특정 대화(pk)를 수정합니다.
-        conversation = Conversation.objects.get(pk=pk)
-        data = json.loads(request.body)
-        serializer = ConversationSerializer(conversation, data=data)
-        if serializer.is_valid():
-            serializer.save() # 데이터가 유효하면 저장
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400) # 유효하지 않으면 오류 반환
-
     def delete(self, request, pk, *args, **kwargs):
         # 특정 대화(pk)를 삭제합니다.
         conversation = Conversation.objects.get(pk=pk)
