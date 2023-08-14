@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import UserSerializer
-from rest_framework.permissions import AllowAny
-from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authtoken.views import ObtainAuthToken, APIView
 from rest_framework.authtoken.models import Token
 
 
@@ -40,3 +40,11 @@ class LoginView(ObtainAuthToken):
             'username': user.username,
         })
     
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        request.user.auth_token.delete()
+        # CAUTION: probably the user is not logged out here, only the token is deleted?
+        return Response(status=status.HTTP_204_NO_CONTENT)
