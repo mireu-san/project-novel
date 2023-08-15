@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'chatbot',
     'users',
+    'chat_history',
 ]
 
 
