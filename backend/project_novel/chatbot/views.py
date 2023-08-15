@@ -12,8 +12,8 @@ from rest_framework import viewsets
 from .serializers import ConversationSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-# from rest_framework.authentication import TokenAuthentication
-# from rest_framework.permissions import BasePermission
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from chat_history.models import ChatHistory
 
 load_dotenv()
@@ -25,12 +25,15 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
 class ChatbotView(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsOwnerOfChatHistory]
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    # authentication_classes = []
+    # permission_classes = []
 
     def post(self, request, *args, **kwargs):
+        body = json.loads(request.body.decode('utf-8'))
+        messages = body.get('messages', [])
+
         # 요청 본문 로깅
         print("Received request body:", request.body.decode('utf-8'))
 
@@ -44,6 +47,10 @@ class ChatbotView(APIView):
         # 들어오는 value가 없을 시, 예외 처리
         prompt = None
         response = None
+
+        for message in messages:
+            if message['role'] == 'user':
+                prompt = message['content']
 
         # class ChatbotView(viewsets.ModelViewSet): - chat_history app 에서 가져옴.
         chat_history_record = ChatHistory.objects.create(
