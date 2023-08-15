@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 # from rest_framework.authentication import TokenAuthentication
 # from rest_framework.permissions import BasePermission
-
+from chat_history.models import ChatHistory
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -44,6 +44,14 @@ class ChatbotView(APIView):
         # 들어오는 value가 없을 시, 예외 처리
         prompt = None
         response = None
+
+        # class ChatbotView(viewsets.ModelViewSet): - chat_history app 에서 가져옴.
+        chat_history_record = ChatHistory.objects.create(
+            user=request.user,  # The authenticated user
+            prompt=prompt,  # The user's prompt
+            response=response,  # The chatbot's response
+        )
+        chat_history_record.save()
 
         for message in messages:
             if message['role'] == 'user':
@@ -83,6 +91,7 @@ class ChatbotView(APIView):
         return JsonResponse({'conversations': conversations})
 # DB 내 대화 데이터와 interacting 하도록 (하는 API). 즉, admin, user 모두 DB에 저장된 chat history 관리가능케 하는 API.
 # 각 endpoint 에 대한 CRUD 작업을 수행하는 API. (기존 viewsets.ModelViewSet 을 View 로 통일화 및 대체)
+
 
 
 class ConversationView(View):
