@@ -2,6 +2,7 @@
 from django.http import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 import openai
@@ -12,7 +13,8 @@ from rest_framework import viewsets
 from .serializers import ConversationSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import TokenAuthentication
+# from rest_framework.authentication import TokenAuthentication, JWTAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from chat_history.models import ChatHistory
 
@@ -24,15 +26,17 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # 유저가 장고 서버를 통해 interatcion 하도록.
 
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class ChatbotView(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
     # authentication_classes = []
     # permission_classes = []
 
     def post(self, request, *args, **kwargs):
         body = json.loads(request.body.decode('utf-8'))
-        messages = body.get('messages', [])
+        # messages = body.get('messages', [])
 
         # 요청 본문 로깅
         print("Received request body:", request.body.decode('utf-8'))
