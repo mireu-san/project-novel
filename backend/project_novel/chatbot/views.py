@@ -18,6 +18,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from chat_history.models import ChatHistory
 
+
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -26,9 +27,11 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # 유저가 장고 서버를 통해 interatcion 하도록.
 
 
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
 class ChatbotView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     # authentication_classes = [TokenAuthentication]
     # permission_classes = [IsAuthenticated]
     # authentication_classes = []
@@ -44,7 +47,9 @@ class ChatbotView(APIView):
         body = json.loads(request.body.decode('utf-8'))
         # 'messages' key 가 있는지 없는지 확인.
         # messages = body['messages']
-        messages = body.get('messages', [])
+        # messages = body.get('messages', [])
+        messages = body
+
         if not messages:
             return Response({'error': '에러 코드 400, client side 에서 어떠한 메세지를 받지 못함.'}, status=400)
 
