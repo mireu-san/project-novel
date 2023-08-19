@@ -31,7 +31,7 @@ class ChatbotView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        user_input = request.data.get("message")
+        user_input = request.data[0]['content']
         if not user_input:
             return Response({"detail": "Message is required."}, status=status.HTTP_400_BAD_REQUEST)
         
