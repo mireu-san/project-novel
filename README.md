@@ -61,7 +61,7 @@ https://stackoverflow.com/questions/50797170/password-encryption-in-django-using
 
 
 ### Django Rest Framework page
-http://localhost:8000/chatbot/api/conversation/
+http://localhost:8000/chatbot/api/chat/
 
 ### Crash note:
 ![이미지 설명](/image/a1.jpg)
@@ -202,3 +202,12 @@ Object
 ```
 
 ![이미지 설명](/image/d1.jpg)
+
+# 점검표
+- 암호 및 username 은 postgresql 에 안전하게 해쉬처리 하여 저장됨.
+- test case (TDD) chat_history, chatbot, users 전원 통과.
+
+8.19 점검표:
+서버에서 수신은 받지만, client 에서 수신 받은 response 값이 표시 되지 않거나, 401 error 가 지속적으로 표시 된 이유는
+- token authentication error 였습니다.
+그러나 최종적으로는 기존 개발 환경에서의 cache 초기화로 해결되었습니다.
