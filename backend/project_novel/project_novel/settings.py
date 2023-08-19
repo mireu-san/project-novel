@@ -15,6 +15,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
+from datetime import timedelta
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -166,3 +169,16 @@ REST_FRAMEWORK = {
     ]
 }
 
+# token 설정 - rest framework simplejwt
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Access token 만료 시간 설정
+    'ROTATE_REFRESH_TOKENS': False,                   # 필요하다면, refresh token을 자동으로 회전
+    'ALGORITHM': 'HS256',                            # 사용하는 암호화 알고리즘
+    'SIGNING_KEY': SECRET_KEY,                       # 서명 키
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',                           # User 모델의 ID 필드
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
