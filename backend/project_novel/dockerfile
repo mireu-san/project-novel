@@ -1,31 +1,25 @@
-# Use an official Python runtime as a parent image
-# FROM python:3.10-alpine3.18
-# LABEL maintainer="https://github.com/mireu-san"
+# Python
+FROM python:3.11.5-alpine3.18
 
-# # To run in docker container - in order to not buffer the output
-# ENV PYTHONUNBUFFERED 1
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# # Copy the requirements file into the container at /tmp
-# COPY ./backend/requirements.txt /tmp/requirements.txt
-# COPY ./backend/requirements.dev.txt /tmp/requirements.dev.txt
-# # Copy the current directory contents into the container at /app
-# COPY ./backend/project_novel /app
-# # Set the working directory to /app
-# WORKDIR /app
-# # Expose port 8000 for the Django app
-# EXPOSE 8000
+# Set work directory
+WORKDIR /app
 
-# ARG DEV=false
-# # Install any needed packages specified in requirements.txt
-# RUN pip install --upgrade pip && \
-#     pip install -r /tmp/requirements.txt && \
-#     if [ "$DEV" = "true" ]; \
-#         then pip install -r /tmp/requirements.dev.txt; \
-#     fi && \
-#     rm -rf /tmp && \
-#     adduser \
-#         --disabled-password \
-#         --no-create-home \
-#         django-user
+# Install dependencies
+COPY requirements.txt /app/
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# USER django-user
+# Check if gunicorn is in requirements.txt
+RUN if ! pip show gunicorn > /dev/null; then \
+        echo "gunicorn not found in requirements.txt"; \
+        exit 1; \
+    fi
+
+# Copy project
+COPY . /app/
+
+# Collect static files
+RUN python manage.py collectstatic --noinput

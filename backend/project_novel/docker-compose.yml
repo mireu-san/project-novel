@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  django:
+    build: .
+    command: gunicorn lightnovelgpt.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - django
+
+  db:
+  # postgres
+    image: postgres:16.0
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB={DB_NAME}
+      - POSTGRES_USER={DB_USER}
+      - POSTGRES_PASSWORD={DB_PASSWORD}
+      - POSTGRES_HOST={DB_HOST}
+      - POSTGRES_PORT={DB_PORT}
+
+volumes:
+  postgres_data:
