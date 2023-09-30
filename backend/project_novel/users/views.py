@@ -32,7 +32,8 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated, IsSelfOrAdmin]
         else:
             permission_classes = [IsAuthenticated]
-        return [permission() for permission in permission_classes]    
+        return [permission() for permission in permission_classes]
+
 
 class SignupView(CreateAPIView):
     serializer_class = UserSerializer
