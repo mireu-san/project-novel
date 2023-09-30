@@ -4,11 +4,7 @@ services:
   django:
     build: 
       context: .
-      args:
-        DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-    env_file:
-      - .env
-    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    command: ./django-static.sh
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
@@ -17,6 +13,7 @@ services:
 
   nginx:
     image: nginx:1.25.2-alpine
+    container_name: project_novel-nginx
     ports:
       - "80:80"
     volumes:
@@ -27,6 +24,7 @@ services:
 
   db:
     image: postgres:16.0
+    container_name: project_novel-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
