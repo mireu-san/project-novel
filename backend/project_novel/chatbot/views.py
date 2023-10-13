@@ -14,7 +14,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 # from rest_framework.authentication import TokenAuthentication
 # from rest_framework.permissions import BasePermission
+import logging
 
+logger = logging.getLogger('django')
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -39,8 +41,10 @@ class ChatbotView(APIView):
         
         사용자의 메시지를 받아 OpenAI GPT로부터 응답을 생성하고 반환합니다.
         """
+        
+        logger.info('Post method entered')
 
-    # Logging the raw request body
+        # Logging the raw request body
         raw_body = request.body.decode('utf-8')
         print("Received request body:", raw_body)
 
