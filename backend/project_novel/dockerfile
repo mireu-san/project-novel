@@ -13,16 +13,15 @@ RUN apk --no-cache add postgresql-dev gcc musl-dev
 
 # Install dependencies
 COPY requirements.txt /app/
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# speicifed version to prevent future malfunction 
+RUN pip install --upgrade pip==23.2.1 && \
+    pip install -r requirements.txt
+
 
 # Copy project files into the docker image
 COPY . /app/
 
-# # Check if gunicorn is in requirements.txt
-# RUN if ! pip show gunicorn > /dev/null; then \
-#         echo "gunicorn not found in requirements.txt"; \
-#         exit 1; \
-#     fi
+# migration
+COPY ./entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# Collect static files
-# RUN python manage.py collectstatic --noinput

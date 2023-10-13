@@ -9,8 +9,15 @@ services:
     volumes:
       - .:/app    # Mount the current directory to /app in the container
       - static_volume:/app/staticfiles  # Mount static_volume to /app/staticfiles in the container
+    environment:  # 환경 변수
+      DJANGO_SETTINGS_MODULE: core.settings
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
     depends_on:
-      - db    # Depends on the db service
+      - db # db 서비스가 시작된 후에 django 서비스를 시작합니다.
 
   # Nginx service configuration
   nginx:
