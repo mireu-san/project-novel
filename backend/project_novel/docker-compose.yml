@@ -1,8 +1,13 @@
 version: '3.8'
 
 services:
+
+  redis:
+    image: redis:7.2.1-alpine
+
   # Django service configuration
   django:
+    container_name: django
     build: 
       context: .   # Current directory as build context
     command: ./django-static.sh  # Command to run
@@ -11,13 +16,17 @@ services:
       - static_volume:/app/staticfiles  # Mount static_volume to /app/staticfiles in the container
     environment:  # 환경 변수
       DJANGO_SETTINGS_MODULE: core.settings
+      ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
     depends_on:
+      - redis # redis 서비스가 시작된 후에 django 서비스를 시작합니다.
       - db # db 서비스가 시작된 후에 django 서비스를 시작합니다.
+
+
 
   # Nginx service configuration
   nginx:
@@ -43,6 +52,25 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_HOST=${DB_HOST}
       - POSTGRES_PORT=${DB_PORT}
+
+  celery:
+    container_name: celery
+    build:
+      context: .   # Current directory as build context
+    volumes:
+      - .:/app    # Mount the current directory to /app in the container
+      - static_volume:/app/staticfiles  # Mount static_volume to /app/staticfiles in the container
+    environment:  # 환경 변수
+      DJANGO_SETTINGS_MODULE: core.settings
+      ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      - redis # redis 서비스가 시작된 후에 django 서비스를 시작합니다.
+      - db # db 서비스가 시작된 후에 django 서비스를 시작합니다.
 
 # Define the volumes
 volumes:

@@ -19,8 +19,13 @@ import logging
 logger = logging.getLogger('django')
 
 load_dotenv()
+
+# API KEY 를 환경변수로부터 불러옵니다.
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+# 최종 단계에서 활성화 및 구성 예정
+# https://platform.openai.com/docs/libraries/python-library
+# chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": "Hello world"}])
 
 @method_decorator(csrf_exempt, name='dispatch')
 # 유저가 장고 서버를 통해 interatcion 하도록.
