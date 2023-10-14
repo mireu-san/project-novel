@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CworkerConfig(AppConfig):
+class CeleryAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'cworker'
+    name = 'celeryapp'

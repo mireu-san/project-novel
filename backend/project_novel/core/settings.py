@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'chatbot',
     'users',
     # celery worker
-    'cworker',
+    'celeryapp',
 ]
 
 MIDDLEWARE = [
