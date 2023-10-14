@@ -57,6 +57,7 @@ services:
     container_name: celery
     build:
       context: .   # Current directory as build context
+    command: celery --app=core worker -l INFO
     volumes:
       - .:/app    # Mount the current directory to /app in the container
       - static_volume:/app/staticfiles  # Mount static_volume to /app/staticfiles in the container

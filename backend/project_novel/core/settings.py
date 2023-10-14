@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'chatbot',
     'users',
+    # celery worker
+    'cworker',
 ]
 
 MIDDLEWARE = [
