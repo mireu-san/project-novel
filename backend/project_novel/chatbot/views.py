@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 # from rest_framework.authentication import TokenAuthentication
 # from rest_framework.permissions import BasePermission
 import logging
+from celeryapp.tasks import process_openai_request
 
 logger = logging.getLogger('django')
 
@@ -50,6 +51,8 @@ class ChatbotView(APIView):
         logger.info('Post method entered')
 
         # Logging the raw request body
+
+        # Prompt 처리 부분
         raw_body = request.body.decode('utf-8')
         print("Received request body:", raw_body)
 
@@ -64,17 +67,27 @@ class ChatbotView(APIView):
         previous_conversations = "\n".join([f"User: {c['prompt']}\nAI: {c['response']}" for c in session_conversations])
         prompt_with_previous = f"{previous_conversations}\nUser: {prompt}\nAI:"
 
-        model_engine = "text-davinci-003"
-        completions = openai.Completion.create(
-            engine=model_engine,
-            prompt=prompt_with_previous,
-            max_tokens=1024,
-            n=5,
-            stop=None,
-            temperature=0.5,
-        )
-        response = completions.choices[0].text.strip()
+        # model_engine = "text-davinci-003"
+        # completions = openai.Completion.create(
+        #     engine=model_engine,
+        #     prompt=prompt_with_previous,
+        #     max_tokens=1024,
+        #     n=5,
+        #     stop=None,
+        #     temperature=0.5,
+        # )
+        # response = completions.choices[0].text.strip()
+        
+        # Response 처리 부분
+        try:
+            response = process_openai_request.delay(prompt_with_previous).get(timeout=30)
+        except Exception as e:
+            # Log the error and return a 500 response
+            logger.error(f"Error processing OpenAI request: {e}")
+            return Response({'error': 'Error processing request'}, status=500)
 
+        # Saving the conversation to the database
+        # 추후, user 와 admin 모두가 DB 내 대화 데이터를 관리할 수 있도록.
         conversation = Conversation(prompt=prompt, response=response)
         conversation.save()
 
