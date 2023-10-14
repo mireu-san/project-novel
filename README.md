@@ -57,3 +57,60 @@ celery worker 로 적용을 고려할 초기 기획단계에서는, GPT-3 의 �
 2. CI/CD. TDD 구동 후, merge to main 으로. 단, merge pull request 거친 후 진행토록.
 3. README 개선 필요. EDR 등, work flow 추가 고려.
 ```
+
+<!-- 
+### CI/CD script - redis, celery worker 추가 고려.
+```
+name: Update Container - main/project-novel
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:16.0
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.5
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Make migrations
+        run: |
+          python manage.py makemigrations
+      
+      - name: Apply database migrations
+        run: python manage.py migrate
+
+      - name: Run tests
+        run: python manage.py test
+``` -->
