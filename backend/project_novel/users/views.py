@@ -29,18 +29,24 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """해당 액션에 대한 권한 클래스를 반환합니다."""
-        if self.action == 'create':
-            permission_classes = [AllowAny]
-        elif self.action in ['list', 'retrieve', 'update', 'partial_update', 'destroy']:
-            permission_classes = [IsAuthenticated, IsSelfOrAdmin]
-        else:
-            permission_classes = [IsAuthenticated]
+        permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
 
 class SignupView(CreateAPIView):
     """새로운 사용자를 등록하는 API 엔드포인트"""
     serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 
 class LoginView(ObtainAuthToken):
@@ -59,7 +65,7 @@ class LoginView(ObtainAuthToken):
 
 class LogoutView(APIView):
     """로그아웃하고 토큰을 삭제하는 API 엔드포인트"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         request.user.auth_token.delete()
