@@ -1,4 +1,5 @@
 # ★chatbot/views.py
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -12,8 +13,6 @@ from rest_framework import viewsets
 from .serializers import ConversationSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-# from rest_framework.authentication import TokenAuthentication
-# from rest_framework.permissions import BasePermission
 import logging
 from celeryapp.tasks import process_openai_request
 
@@ -32,7 +31,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # 유저가 장고 서버를 통해 interatcion 하도록.
 
 
-class ChatbotView(APIView):
+class ChatbotView(LoginRequiredMixin, APIView):
     """
     사용자와 대화하는 챗봇 뷰입니다.
     
@@ -42,6 +41,8 @@ class ChatbotView(APIView):
     permission_classes = []
 
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({'error': '로그인을 먼저 하세요!'}, status=401)
         """
         사용자와 대화하는 챗봇 뷰입니다.
         
@@ -66,17 +67,6 @@ class ChatbotView(APIView):
         session_conversations = request.session.get('conversations', [])
         previous_conversations = "\n".join([f"User: {c['prompt']}\nAI: {c['response']}" for c in session_conversations])
         prompt_with_previous = f"{previous_conversations}\nUser: {prompt}\nAI:"
-
-        # model_engine = "text-davinci-003"
-        # completions = openai.Completion.create(
-        #     engine=model_engine,
-        #     prompt=prompt_with_previous,
-        #     max_tokens=1024,
-        #     n=5,
-        #     stop=None,
-        #     temperature=0.5,
-        # )
-        # response = completions.choices[0].text.strip()
         
         # Response 처리 부분
         try:
@@ -110,7 +100,7 @@ class ChatbotView(APIView):
 # 각 endpoint 에 대한 CRUD 작업을 수행하는 API. (기존 viewsets.ModelViewSet 을 View 로 통일화 및 대체)
 
 
-class ConversationView(View):
+class ConversationView(LoginRequiredMixin, View):
     """
     대화 내역을 데이터베이스에서 조회, 추가, 삭제하는 API 뷰입니다.
     
