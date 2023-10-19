@@ -1,4 +1,5 @@
 # ★chatbot/views.py
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -32,7 +33,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # 유저가 장고 서버를 통해 interatcion 하도록.
 
 
-class ChatbotView(APIView):
+class ChatbotView(LoginRequiredMixin, APIView):
     """
     사용자와 대화하는 챗봇 뷰입니다.
     
@@ -42,6 +43,8 @@ class ChatbotView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({'error': '로그인을 먼저 하세요!'}, status=401)
         """
         사용자와 대화하는 챗봇 뷰입니다.
         
@@ -111,7 +114,7 @@ class ChatbotView(APIView):
         return JsonResponse({'conversations': conversations})
 
 
-class ConversationView(View):
+class ConversationView(LoginRequiredMixin, View):
     """
     대화 내역을 데이터베이스에서 조회, 추가, 삭제하는 API 뷰입니다.
     
