@@ -46,7 +46,9 @@ class SignupView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        serializer.save()
+        user = serializer.save()
+        user.set_password(serializer.validated_data['password'])  # 비밀번호를 해시화합니다.
+        user.save()  # 변경된 내용을 데이터베이스에 저장합니다.
 
 
 class LoginView(ObtainAuthToken):
@@ -65,9 +67,13 @@ class LoginView(ObtainAuthToken):
 
 class LogoutView(APIView):
     """로그아웃하고 토큰을 삭제하는 API 엔드포인트"""
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        request.user.auth_token.delete()
-        # CAUTION: probably the user is not logged out here, only the token is deleted?
+        try:
+            token = Token.objects.get(user=request.user)
+            token.delete()
+        except Token.DoesNotExist:
+            pass  # Handle token not found, if necessary
+
         return Response(status=status.HTTP_204_NO_CONTENT)
