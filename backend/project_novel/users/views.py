@@ -57,8 +57,8 @@ class SignupView(CreateAPIView):
 class LoginView(APIView):
     """로그인하고 토큰을 받는 API 엔드포인트"""
     serializer_class = AuthTokenSerializer  # 클래스 레벨 변수로 serializer_class를 설정
-    permission_classes = (AllowAny,)
-    
+    permission_classes = (AllowAny,) # 안그러면 Unauthorized 발생함. 
+
     @swagger_auto_schema(request_body=AuthTokenSerializer)
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})  # 요청 데이터를 시리얼라이저에 전달합니다.
@@ -75,8 +75,7 @@ class LoginView(APIView):
 # 사용자가 로그아웃하고 토큰을 삭제하는 API 엔드포인트를 정의하는 뷰 클래스입니다.
 class LogoutView(APIView):
     """로그아웃하고 토큰을 삭제하는 API 엔드포인트"""
-    # permission_classes = (IsAuthenticated,)  # 인증된 사용자에게만 권한을 부여합니다.
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,) # 로그인도 마찬가지로 누구나 로그인 허가. 안그러면 Unauthorized 발생함. 
 
     # POST 요청을 처리하는 메소드입니다.
     def post(self, request):
