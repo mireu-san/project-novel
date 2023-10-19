@@ -12,8 +12,8 @@ from rest_framework import viewsets
 from .serializers import ConversationSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-# from rest_framework.authentication import TokenAuthentication
-# from rest_framework.permissions import BasePermission
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 import logging
 from celeryapp.tasks import process_openai_request
 
@@ -38,8 +38,8 @@ class ChatbotView(APIView):
     
     사용자의 메시지를 받아 OpenAI GPT로부터 응답을 생성하고 반환합니다.
     """
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         """
