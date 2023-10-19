@@ -66,17 +66,6 @@ class ChatbotView(APIView):
         session_conversations = request.session.get('conversations', [])
         previous_conversations = "\n".join([f"User: {c['prompt']}\nAI: {c['response']}" for c in session_conversations])
         prompt_with_previous = f"{previous_conversations}\nUser: {prompt}\nAI:"
-
-        # model_engine = "text-davinci-003"
-        # completions = openai.Completion.create(
-        #     engine=model_engine,
-        #     prompt=prompt_with_previous,
-        #     max_tokens=1024,
-        #     n=5,
-        #     stop=None,
-        #     temperature=0.5,
-        # )
-        # response = completions.choices[0].text.strip()
         
         # Response 처리 부분
         try:
