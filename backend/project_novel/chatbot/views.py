@@ -13,6 +13,8 @@ from rest_framework import viewsets
 from .serializers import ConversationSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 import logging
 from celeryapp.tasks import process_openai_request
 
@@ -37,8 +39,8 @@ class ChatbotView(LoginRequiredMixin, APIView):
     
     사용자의 메시지를 받아 OpenAI GPT로부터 응답을 생성하고 반환합니다.
     """
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -58,19 +60,33 @@ class ChatbotView(LoginRequiredMixin, APIView):
         print("Received request body:", raw_body)
 
         # Assuming the raw_body is a plain string message from the user
-        prompt = raw_body.strip()
+        user_message = raw_body.strip()
 
-        if not prompt:
+        if not user_message:
             return Response({'error': 'Empty message received'}, status=400)
 
-        # Existing logic to get a response from OpenAI
-        session_conversations = request.session.get('conversations', [])
-        previous_conversations = "\n".join([f"User: {c['prompt']}\nAI: {c['response']}" for c in session_conversations])
-        prompt_with_previous = f"{previous_conversations}\nUser: {prompt}\nAI:"
-        
+        # Predefined prompt
+        predefined_prompt = {
+            "role": "system",
+            "content": "You are an anime expert. Your role is to listen to a user input and based on his/her expression, suggest any anime, light novel, visual novel or manga for this user."
+        }
+
+        # User message
+        user_input = {
+            "role": "user",
+            "content": user_message
+        }
+
+        # Preparing the messages parameter
+        messages = [predefined_prompt, user_input]
+
         # Response 처리 부분
         try:
-            response = process_openai_request.delay(prompt_with_previous).get(timeout=30)
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=messages
+            )
+            response_text = response['choices'][0]['message']['content']
         except Exception as e:
             # Log the error and return a 500 response
             logger.error(f"Error processing OpenAI request: {e}")
@@ -78,17 +94,17 @@ class ChatbotView(LoginRequiredMixin, APIView):
 
         # Saving the conversation to the database
         # 추후, user 와 admin 모두가 DB 내 대화 데이터를 관리할 수 있도록.
-        conversation = Conversation(prompt=prompt, response=response)
+        conversation = Conversation(prompt=user_message, response=response_text)
         conversation.save()
 
         # Updating the session with the new conversation
-        session_conversations.append({'prompt': prompt, 'response': response})
+        session_conversations = request.session.get('conversations', [])
+        session_conversations.append({'prompt': user_message, 'response': response_text})
         request.session['conversations'] = session_conversations
         request.session.modified = True
 
-        print({'prompt': prompt, 'response': response})
-        return JsonResponse({'prompt': prompt, 'response': response})
-
+        print({'prompt': user_message, 'response': response_text})
+        return JsonResponse({'prompt': user_message, 'response': response_text})
 
     def get(self, request, *args, **kwargs):
         """
@@ -96,8 +112,6 @@ class ChatbotView(LoginRequiredMixin, APIView):
         """
         conversations = request.session.get('conversations', [])
         return JsonResponse({'conversations': conversations})
-# DB 내 대화 데이터와 interacting 하도록 (하는 API). 즉, admin, user 모두 DB에 저장된 chat history 관리가능케 하는 API.
-# 각 endpoint 에 대한 CRUD 작업을 수행하는 API. (기존 viewsets.ModelViewSet 을 View 로 통일화 및 대체)
 
 
 class ConversationView(LoginRequiredMixin, View):
