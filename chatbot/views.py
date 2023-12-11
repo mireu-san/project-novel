@@ -7,15 +7,16 @@ from dotenv import load_dotenv
 import openai
 import os
 import json
-from .models import Conversation
+from chatbot.models import Conversation
+from users.models import ChatHistory
 from rest_framework import viewsets
-from .serializers import ConversationSerializer
+from .serializers import ConversationSerializer, ChatHistorySerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 import logging
-from celeryapp.tasks import process_openai_request
+from prompt_parser.tasks import process_openai_request
 from celery.result import AsyncResult
 
 logger = logging.getLogger("django")
@@ -68,18 +69,27 @@ class ChatbotView(APIView):
 
         # Dispatch the OpenAI API call to a Celery task
         task = process_openai_request.apply_async(args=[user_message])
-        task_id = task.id  # You can store this task_id to check the status later
+        task_id = task.id
 
-        # Optional: Save the task_id to the database or session if needed for later reference.
+        # Save the user's prompt (and later response) to the ChatHistory
+        # This assumes you will update the task to return the response
+        chat_history = ChatHistory(user=request.user, prompt=user_message)
+        chat_history.save()
 
-        return JsonResponse({"task_id": task_id})  # Return task_id to the client
+        # Return task_id to the client
+        return JsonResponse({"task_id": task_id})
 
     def get(self, request, *args, **kwargs):
-        """
-        사용자의 대화 이력을 반환합니다.
-        """
-        conversations = request.session.get("conversations", [])
-        return JsonResponse({"conversations": conversations})
+        # Get the chat history for the current user
+        chat_history = ChatHistory.objects.filter(user=request.user).order_by(
+            "-created_at"
+        )
+
+        # Serialize the chat history
+        serializer = ChatHistorySerializer(chat_history, many=True)
+
+        # Return the serialized chat history
+        return JsonResponse({"chat_history": serializer.data})
 
 
 class ConversationView(View):

@@ -79,6 +79,8 @@ celery worker 로 적용을 고려할 초기 기획단계에서는, GPT-3 의 �
 
 ## TIL / 회고록
 업데이트 예정입니다.
+- pycurl 을 사용하지 않은 이유.
 
 ## Client
 https://github.com/mireu-san/lightnovel-gpt-client
+

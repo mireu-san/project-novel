@@ -1,4 +1,4 @@
-# celeryapp/tasks.py
+# 구 celeryapp/tasks.py
 from celery import shared_task
 import openai
 
