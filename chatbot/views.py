@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 import logging
-from celeryapp.tasks import process_openai_request
+from prompt_parser.tasks import process_openai_request
 from celery.result import AsyncResult
 
 logger = logging.getLogger("django")
