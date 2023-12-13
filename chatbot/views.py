@@ -72,12 +72,11 @@ class ChatbotView(APIView):
         task_id = task.id
 
         # Save the user's prompt (and later response) to the ChatHistory
-        # This assumes you will update the task to return the response
+        # Note: Response will be updated later once it is received from the task
         chat_history = ChatHistory(user=request.user, prompt=user_message)
         chat_history.save()
 
-        # Return task_id to the client
-        return JsonResponse({"task_id": task_id})
+        return JsonResponse({"task_id": task_id, "prompt": user_message})
 
     def get(self, request, *args, **kwargs):
         # Get the chat history for the current user
