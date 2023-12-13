@@ -67,24 +67,16 @@ class ChatbotView(APIView):
         if not user_message:
             return Response({"error": "Empty message received"}, status=400)
 
-        # Dispatch the OpenAI API call to a Celery task
-        task = process_openai_request.apply_async(args=[user_message])
-        task_id = task.id
-
-        # Save the user's prompt (and later response) to the ChatHistory
-        # This assumes you will update the task to return the response
+        # Save the user's prompt to the ChatHistory
         chat_history = ChatHistory(user=request.user, prompt=user_message)
         chat_history.save()
 
-        response = process_openai_request(user_message)
-        chat_history = ChatHistory(
-            user=request.user, prompt=user_message, response=response
-        )
-        chat_history.save()
+        # Dispatch the OpenAI API call to a Celery task, passing the chat_history ID
+        task = process_openai_request.apply_async(args=[chat_history.id, user_message])
+        task_id = task.id
 
-        return JsonResponse(
-            {"task_id": task_id, "prompt": user_message, "response": response}
-        )
+        # Return task_id to the client
+        return JsonResponse({"task_id": task_id})
 
     def get(self, request, *args, **kwargs):
         # Get the chat history for the current user
