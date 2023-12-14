@@ -12,6 +12,10 @@
 ## 개요
 OpenAI 의 API인 ChatGPT 를 해당 웹서비스에 적용하여, 응답 내용에 기반하여 개인의 선호에 근접한 라이트노벨을 추천 하는 챗봇 서비스입니다.
 
+[참고] 아래 workflow image는 예고 없이 변경 될 수 있습니다.
+
+![image](./assets/images/novel-gpt-diagram.jpg)
+
 # Skills
 #### Language and Tool
 
