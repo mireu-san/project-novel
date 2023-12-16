@@ -13,6 +13,7 @@ def process_openai_request(chat_history_id, user_message, user_id):
         user_id=user_id, date=today
     )
 
+    # if exceeded, then user gets this message instead. No prompt deliver to openAI.
     if request_count.count >= 5:
         # User has reached the daily limit
         return "You have reached your daily limit of 5 requests."
