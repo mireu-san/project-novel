@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -23,3 +24,12 @@ class ChatHistory(models.Model):
 
     def __str__(self):
         return f"ChatHistory(user={self.user.username}, created_at={self.created_at})"
+
+
+class UserRequestCount(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)
+    count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"UserRequestCount(user={self.user.username}, date={self.date}, count={self.count})"

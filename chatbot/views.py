@@ -72,7 +72,9 @@ class ChatbotView(APIView):
         chat_history.save()
 
         # Dispatch the OpenAI API call to a Celery task, passing the chat_history ID
-        task = process_openai_request.apply_async(args=[chat_history.id, user_message])
+        task = process_openai_request.apply_async(
+            args=[chat_history.id, user_message, request.user.id]
+        )
         task_id = task.id
 
         # Return task_id to the client

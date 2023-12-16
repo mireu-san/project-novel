@@ -1,11 +1,24 @@
 # 구 celeryapp/tasks.py
 from celery import shared_task
 import openai
-from users.models import ChatHistory
+from users.models import ChatHistory, UserRequestCount
+from datetime import datetime
 
 
 @shared_task
-def process_openai_request(chat_history_id, user_message):
+def process_openai_request(chat_history_id, user_message, user_id):
+    # Check if the user has already reached their daily limit
+    today = datetime.now().date()
+    request_count, created = UserRequestCount.objects.get_or_create(
+        user_id=user_id, date=today
+    )
+
+    # if exceeded, then user gets this message instead. No prompt deliver to openAI.
+    if request_count.count >= 5:
+        # User has reached the daily limit
+        return "You have reached your daily limit of 5 requests."
+
+    # system prompt
     predefined_prompt = {
         "role": "system",
         "content": "You are an anime expert. Your role is to listen to a user input and based on his/her expression, suggest any anime, light novel, visual novel or manga for this user.",
@@ -15,7 +28,6 @@ def process_openai_request(chat_history_id, user_message):
 
     try:
         response = openai.ChatCompletion.create(
-            # ★NOTE : NEED TO CHECK WHETHER IT STILL USES 3.5 or 4.0
             model="gpt-3.5-turbo",
             messages=messages,
         )
@@ -25,6 +37,10 @@ def process_openai_request(chat_history_id, user_message):
         chat_history = ChatHistory.objects.get(id=chat_history_id)
         chat_history.response = response_text
         chat_history.save()
+
+        # Increment the user's request count
+        request_count.count += 1
+        request_count.save()
 
         return response_text
     except openai.error.OpenAIError as e:
