@@ -37,31 +37,10 @@ Vite(reactjs)기반의 client 에서, Django 서버 (handling openAI)와 송수�
 - middleware/logging_latency.py 생성. 현재 콘솔 내 로그는 별도로 저장하도록 조정 하지않음.
 
 ## API Reference
-업데이트 예정입니다.
+리팩토링 작업 후, 업데이트 예정입니다.
 
 ## ERD
-업데이트 예정입니다.
-
-## Git Convention
-<details>
-<summary>펼쳐서 적용 Git 컨벤션 목록 보기</summary>
-<pre>
-feat – a new feature is introduced with the changes
-fix – a bug fix has occurred
-chore – changes that do not relate to a fix or feature and don't modify src or test files (for example updating dependencies)
-refactor – refactored code that neither fixes a bug nor adds a feature
-docs – updates to documentation such as a the README or other markdown files
-style – changes that do not affect the meaning of the code, likely related to code formatting such as white-space, missing semi-colons, and so on.
-test – including new or correcting previous tests
-perf – performance improvements
-ci – continuous integration related
-build – changes that affect the build system or external dependencies
-revert – reverts a previous commit
-
-Source: https://www.freecodecamp.org/news/how-to-write-better-git-commit-messages/
-</pre>
-</details>
-
+리팩토링 작업 후, 업데이트 예정입니다.
 
 <!-- command sheet - checklist -->
 <!-- ```
@@ -73,6 +52,11 @@ docker compose up -d --build
 docker exec -it django /bin/sh
 ``` -->
 
+## TIL / 회고록
+업데이트 예정입니다.
+- pycurl 을 사용하지 않은 이유.
+- [토큰과 소셜 인증 구성 과정 기록 - (1)](https://medium.com/@bellwoan/django-%EC%9D%B8%EC%A6%9D-%EA%B5%AC%EC%84%B1-%EA%B3%BC%EC%A0%95-%EA%B8%B0%EB%A1%9D-c8d2a548b046)
+
 ## celery 적용 전후 기록
 celery worker 로 적용을 고려할 초기 기획단계에서는, GPT-3 의 성능이 분명하게 응답에 있어 다소 느린 문제가 있었습니다. 그러나 현 celery worker 까지의 적용 및 할당 시점에서는, openAI 의 API 서버 자체적으로 성능이 개선되어 지금은 무겁지 않게 되었습니다.
 
@@ -81,10 +65,5 @@ celery worker 로 적용을 고려할 초기 기획단계에서는, GPT-3 의 �
 - celery 적용 전 대비, 적용 이후에는 410m/s 수준으로, 유의미하게 개선되었습니다. (약 50% 성능 향상)
 - 테스트 조건 : 'predefined prompt 적용 이 후, 복합적으로 3가지 문항에 맞게 질문'
 
-## TIL / 회고록
-업데이트 예정입니다.
-- pycurl 을 사용하지 않은 이유.
-
 ## Client
 https://github.com/mireu-san/lightnovel-gpt-client
-

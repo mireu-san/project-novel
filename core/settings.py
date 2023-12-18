@@ -48,22 +48,31 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # django rest framework
     "rest_framework",
-    "rest_framework_simplejwt",
-    "drf_yasg",  # swagger
-    "corsheaders",
     "rest_framework.authtoken",
+    # "rest_auth",
+    "rest_framework_simplejwt",
+    # swagger
+    "drf_yasg",
+    # cors
+    "corsheaders",
+    # apps
     "chatbot",
     "users",
     # celery worker
     "prompt_parser",
-    # exteranl auth login
+    # social login
     "django.contrib.sites",
     "allauth",
     "allauth.account",
+    # "rest_auth.registration",
     "allauth.socialaccount",
+    # social login provider
     "allauth.socialaccount.providers.google",
 ]
+
+# FRONTEND_URL = "http://localhost:5173"
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -74,15 +83,24 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {
             "access_type": "online",
         },
+        "APP": {
+            "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+            "secret": os.getenv("GOOGLE_SECRET_KEY"),
+            # "key": "",
+        },
     }
 }
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
@@ -93,6 +111,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # to log latency - middleware/logging_latency.py
