@@ -44,8 +44,10 @@ urlpatterns = [
     # 관리자 사이트에 대한 URL 설정
     path("admin/", admin.site.urls),
     # google login
-    path("accounts/", include("allauth.urls")),
-    path("", include("users.urls")),
+    path("users/", include("dj_rest_auth.urls")),
+    path("users/", include("allauth.urls")),
+    path("users/", include("users.urls")),
+    # path("", include("users.urls")),
     # chatbot 앱의 URL 설정 포함
     # chatbot.urls 파일에 정의된 URL 패턴을 해당 경로 아래로 포함시킴
     path("chatbot/", include("chatbot.urls")),

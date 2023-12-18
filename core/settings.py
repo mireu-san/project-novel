@@ -39,8 +39,6 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 # Application definition
 
-SITE_ID = 1
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -48,34 +46,35 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     # django rest framework
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "rest_framework.authtoken",
-    # "rest_auth",
-    "rest_framework_simplejwt",
-    # swagger
-    "drf_yasg",
-    # cors
-    "corsheaders",
+    # dj-rest-auth
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    # "rest_framework.authtoken",
     # apps
     "chatbot",
     "users",
     # celery worker
     "prompt_parser",
-    # social login
-    "django.contrib.sites",
+    # swagger
+    "drf_yasg",
+    # cors
+    "corsheaders",
+    # django-allauth
     "allauth",
     "allauth.account",
-    # "rest_auth.registration",
     "allauth.socialaccount",
-    # social login provider
-    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.kakao",
 ]
 
-# FRONTEND_URL = "http://localhost:5173"
+SITE_ID = 1
 
 SOCIALACCOUNT_PROVIDERS = {
-    "google": {
+    "kakao": {
         "SCOPE": [
             "profile",
             "email",
@@ -84,9 +83,9 @@ SOCIALACCOUNT_PROVIDERS = {
             "access_type": "online",
         },
         "APP": {
-            "client_id": os.getenv("GOOGLE_CLIENT_ID"),
-            "secret": os.getenv("GOOGLE_SECRET_KEY"),
-            # "key": "",
+            "client_id": os.getenv("KAKAO_CLIENT_ID"),
+            # "secret": os.getenv("KAKAO_SECRET_KEY"),
+            "key": "",  # default value is empty string
         },
     }
 }
@@ -117,6 +116,8 @@ MIDDLEWARE = [
     # to log latency - middleware/logging_latency.py
     "middleware.logging_latency.LoggingMiddleware",
 ]
+
+AUTH_USER_MODEL = "users.User"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -196,6 +197,11 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # username 필드 사용 x
+ACCOUNT_EMAIL_REQUIRED = True  # email 필드 사용 o
+ACCOUNT_USERNAME_REQUIRED = False  # username 필드 사용 x
+ACCOUNT_AUTHENTICATION_METHOD = "email"  # email로 로그인
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -204,25 +210,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-AUTH_USER_MODEL = "users.User"
-
 
 CORS_ORIGIN_WHITELIST = [
-    "http://127.0.0.1:5500",
+    # "http://127.0.0.1:5500",
+    "*",
 ]
 
 # Token 활성화
 REST_FRAMEWORK = {
-    # 인증 설정
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
-    # 권한 설정
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-    # 스키마 설정
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
 

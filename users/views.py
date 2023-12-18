@@ -44,7 +44,7 @@ class SignupView(CreateAPIView):
     """새로운 사용자를 등록하는 API 엔드포인트"""
 
     serializer_class = UserSerializer  # 사용자 데이터를 직렬화/역직렬화하기 위한 시리얼라이저 클래스를 지정합니다.
-    permission_classes = (AllowAny,)  # 모든 사용자에게 권한을 부여합니다.
+    permission_classes = [AllowAny]  # 모든 사용자에게 권한을 부여합니다.
 
     # POST 요청을 처리하는 메소드입니다.
     def post(self, request, *args, **kwargs):

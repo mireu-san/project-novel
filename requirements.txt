@@ -7,6 +7,7 @@ async-timeout==4.0.3
 attrs==20.3.0
 beautifulsoup4==4.12.2
 billiard==4.1.0
+cachetools==5.3.2
 celery==5.3.4
 certifi==2023.7.22
 cffi==1.16.0
@@ -29,6 +30,7 @@ djangorestframework-jwt==1.11.0
 djangorestframework-simplejwt==5.3.0
 drf-yasg==1.21.7
 frozenlist==1.4.0
+google-auth==2.25.2
 gunicorn==21.2.0
 idna==3.4
 inflection==0.5.1
@@ -45,6 +47,8 @@ plyer==2.1.0
 prompt-toolkit==3.0.39
 psycopg2-binary==2.9.9
 ptyprocess==0.7.0
+pyasn1==0.5.1
+pyasn1-modules==0.3.0
 pycparser==2.21
 pyinstaller==6.1.0
 pyinstaller-hooks-contrib==2023.10
@@ -58,6 +62,7 @@ PyYAML==6.0.1
 redis==5.0.1
 requests==2.31.0
 requests-oauthlib==1.3.1
+rsa==4.9
 six==1.16.0
 soupsieve==2.5
 sqlparse==0.4.4
