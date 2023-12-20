@@ -1,6 +1,3 @@
-# users/views.py 파일
-
-# 필요한 모듈과 클래스를 불러옵니다.
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -8,12 +5,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.generics import CreateAPIView
 from .serializers import UserSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
-
-# from rest_framework.authtoken.views import APIView
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+import requests
+from django.conf import settings
 
 
 # 사용자가 자신의 프로필 또는 관리자가 모든 프로필을 확인, 수정, 삭제할 수 있는 권한 클래스를 정의합니다.
@@ -30,12 +27,12 @@ class IsSelfOrAdmin(BasePermission):
 class UserViewSet(viewsets.ModelViewSet):
     """사용자 정보를 CRUD하는 API 엔드포인트"""
 
-    queryset = get_user_model().objects.all()  # 모든 사용자 객체를 쿼리셋으로 가져옵니다.
-    serializer_class = UserSerializer  # 사용자 데이터를 직렬화/역직렬화하기 위한 시리얼라이저 클래스를 지정합니다.
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
 
     def get_permissions(self):
         """해당 액션에 대한 권한 클래스를 반환합니다."""
-        permission_classes = [AllowAny]  # 모든 사용자에게 권한을 부여합니다.
+        permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
 
@@ -43,47 +40,45 @@ class UserViewSet(viewsets.ModelViewSet):
 class SignupView(CreateAPIView):
     """새로운 사용자를 등록하는 API 엔드포인트"""
 
-    serializer_class = UserSerializer  # 사용자 데이터를 직렬화/역직렬화하기 위한 시리얼라이저 클래스를 지정합니다.
-    permission_classes = [AllowAny]  # 모든 사용자에게 권한을 부여합니다.
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
 
-    # POST 요청을 처리하는 메소드입니다.
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)  # 요청 데이터를 시리얼라이저에 전달합니다.
-        serializer.is_valid(raise_exception=True)  # 데이터 유효성을 검사하고, 유효하지 않으면 예외를 발생시킵니다.
-        self.perform_create(serializer)  # 유효한 데이터로 사용자 객체를 생성합니다.
-        headers = self.get_success_headers(serializer.data)  # 성공 응답의 헤더를 가져옵니다.
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )  # 생성된 사용자 데이터와 201 Created 상태 코드를 반환합니다.
+        )
 
-    # 사용자 객체를 생성하는 메소드입니다.
     def perform_create(self, serializer):
-        user = serializer.save()  # 시리얼라이저를 사용하여 사용자 객체를 생성하고 저장합니다.
-        user.set_password(serializer.validated_data["password"])  # 비밀번호를 해시화하여 저장합니다.
-        user.save()  # 변경된 내용을 데이터베이스에 저장합니다.
+        user = serializer.save()
+        user.set_password(serializer.validated_data["password"])
+        user.save()
 
 
 # 사용자가 로그인하고 토큰을 받는 API 엔드포인트를 정의하는 뷰 클래스입니다.
 class LoginView(APIView):
     """로그인하고 토큰을 받는 API 엔드포인트"""
 
-    serializer_class = AuthTokenSerializer  # 클래스 레벨 변수로 serializer_class를 설정
-    permission_classes = (AllowAny,)  # 안그러면 Unauthorized 발생함.
+    serializer_class = AuthTokenSerializer
+    permission_classes = (AllowAny,)
 
     @swagger_auto_schema(request_body=AuthTokenSerializer)
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
             data=request.data, context={"request": request}
-        )  # 요청 데이터를 시리얼라이저에 전달합니다.
-        serializer.is_valid(raise_exception=True)  # 데이터 유효성을 검사하고, 유효하지 않으면 예외를 발생시킵니다.
-        user = serializer.validated_data["user"]  # 유효한 데이터에서 사용자 객체를 가져옵니다.
-        refresh = RefreshToken.for_user(user)  # 사용자를 위한 새로운 토큰 쌍을 생성합니다.
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        refresh = RefreshToken.for_user(user)
         return Response(
             {
-                "access": str(refresh.access_token),  # 접근 토큰을 반환합니다.
-                "refresh": str(refresh),  # 새로고침 토큰을 반환합니다.
-                "user_id": user.pk,  # 사용자의 ID를 반환합니다.
-                "username": user.username,  # 사용자의 이름을 반환합니다.
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user_id": user.pk,
+                "username": user.username,
             }
         )
 
@@ -92,19 +87,15 @@ class LoginView(APIView):
 class LogoutView(APIView):
     """로그아웃하고 토큰을 삭제하는 API 엔드포인트"""
 
-    permission_classes = (AllowAny,)  # 로그인도 마찬가지로 누구나 로그인 허가. 안그러면 Unauthorized 발생함.
+    permission_classes = (AllowAny,)
 
-    # POST 요청을 처리하는 메소드입니다.
     def post(self, request):
         try:
-            token = Token.objects.get(user=request.user)  # 현재 사용자의 토큰을 가져옵니다.
-            token.delete()  # 토큰을 삭제합니다.
+            token = Token.objects.get(user=request.user)
+            token.delete()
         except Token.DoesNotExist:
-            pass  # 토큰이 없는 경우에는 처리를 하지 않습니다.
-
-        return Response(
-            status=status.HTTP_204_NO_CONTENT
-        )  # 204 No Content 상태 코드를 반환합니다.
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class VerifyAuthView(APIView):
@@ -113,3 +104,55 @@ class VerifyAuthView(APIView):
     def get(self, request, *args, **kwargs):
         is_authenticated = request.user.is_authenticated
         return Response({"isAuthenticated": is_authenticated})
+
+
+# 카카오 로그인 뷰
+class KakaoLoginView(APIView):
+    def get(self, request):
+        code = request.GET.get("code")
+        try:
+            token_response = requests.post(
+                "https://kauth.kakao.com/oauth/token",
+                data={
+                    "grant_type": "authorization_code",
+                    "client_id": settings.KAKAO_REST_API_KEY,
+                    "redirect_uri": "http://localhost:5173/auth/kakao/callback",
+                    "code": code,
+                },
+            )
+            token_response_data = token_response.json()
+            access_token = token_response_data["access_token"]
+
+            user_info_response = requests.get(
+                "https://kapi.kakao.com/v2/user/me",
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+            user_info_data = user_info_response.json()
+
+            email = user_info_data.get("kakao_account", {}).get("email", "")
+            if not email:
+                return Response(
+                    {"error": "Email not provided"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user_model = get_user_model()
+            user, created = user_model.objects.get_or_create(email=email)
+            if created:
+                user.set_password(user_model.objects.make_random_password())
+                user.save()
+
+            refresh = RefreshToken.for_user(user)
+            return Response(
+                {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                }
+            )
+        except KeyError:
+            return Response(
+                {"error": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
