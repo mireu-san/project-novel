@@ -7,6 +7,7 @@ from .views import (
     SignupView,
     VerifyAuthView,
     KakaoLoginView,
+    KakaoLogoutView,
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -26,4 +27,5 @@ urlpatterns = [
     path("users/verify_auth/", VerifyAuthView.as_view(), name="verify_auth"),
     # social login
     path("auth/kakao/", KakaoLoginView.as_view(), name="kakao_login"),
+    path("auth/kakao/logout/", KakaoLogoutView.as_view(), name="kakao_logout"),
 ]

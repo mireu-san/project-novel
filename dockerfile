@@ -19,4 +19,5 @@ RUN pip install --upgrade pip==23.2.1 && \
 
 COPY . /app/
 
+# 0.0.0.0:8000 means it can run in any address of TCP.
 CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000"]

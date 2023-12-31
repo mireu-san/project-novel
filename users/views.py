@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import (
+    RefreshToken,
+    OutstandingToken,
+    BlacklistedToken,
+)
 from rest_framework.generics import CreateAPIView
 from .serializers import UserSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
@@ -11,6 +15,9 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 import requests
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # 사용자가 자신의 프로필 또는 관리자가 모든 프로필을 확인, 수정, 삭제할 수 있는 권한 클래스를 정의합니다.
@@ -108,39 +115,61 @@ class VerifyAuthView(APIView):
 
 # 카카오 로그인 뷰
 class KakaoLoginView(APIView):
-    def get(self, request):
-        code = request.GET.get("code")
+    def post(self, request):
+        # Extract the authorization code from the request data
+        code = request.data.get("code")
+
+        if not code:
+            return Response(
+                {"error": "No authorization code provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
+            # Request to exchange the authorization code for an access token
             token_response = requests.post(
                 "https://kauth.kakao.com/oauth/token",
                 data={
                     "grant_type": "authorization_code",
                     "client_id": settings.KAKAO_REST_API_KEY,
-                    "redirect_uri": "http://localhost:5173/auth/kakao/callback",
+                    "client_secret": settings.KAKAO_CLIENT_SECRET,  # Include client secret
+                    "redirect_uri": settings.KAKAO_REDIRECT_URI,
                     "code": code,
                 },
             )
             token_response_data = token_response.json()
-            access_token = token_response_data["access_token"]
 
+            # Check for error in token response
+            if "error" in token_response_data:
+                return Response(token_response_data, status=status.HTTP_400_BAD_REQUEST)
+
+            access_token = token_response_data.get("access_token")
+
+            # Use access token to request user information from Kakao
             user_info_response = requests.get(
                 "https://kapi.kakao.com/v2/user/me",
                 headers={"Authorization": f"Bearer {access_token}"},
             )
             user_info_data = user_info_response.json()
 
-            email = user_info_data.get("kakao_account", {}).get("email", "")
+            # Extract email from user information
+            email = user_info_data.get("kakao_account", {}).get("email")
             if not email:
                 return Response(
-                    {"error": "Email not provided"}, status=status.HTTP_400_BAD_REQUEST
+                    {"error": "Kakao account does not provide an email"},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            user_model = get_user_model()
-            user, created = user_model.objects.get_or_create(email=email)
+            # Get or create a user based on the email
+            User = get_user_model()
+            user, created = User.objects.get_or_create(email=email)
+
+            # If the user is created, set an unusable password
             if created:
-                user.set_password(user_model.objects.make_random_password())
+                user.set_unusable_password()
                 user.save()
 
+            # Create JWT tokens for the user
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
@@ -148,10 +177,29 @@ class KakaoLoginView(APIView):
                     "access": str(refresh.access_token),
                 }
             )
-        except KeyError:
+
+        except Exception as e:
+            # Return a response in case of any exception
             return Response(
-                {"error": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class KakaoLogoutView(APIView):
+    """
+    카카오 로그아웃을 처리하는 API 엔드포인트
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        # 로컬 JWT 토큰 무효화
+        try:
+            tokens = OutstandingToken.objects.filter(user=request.user)
+            for token in tokens:
+                BlacklistedToken.objects.get_or_create(token=token)
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
